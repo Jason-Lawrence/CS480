@@ -12,7 +12,7 @@ StochasticGameState = namedtuple('StochasticGameState', 'to_move, utility, board
 
 # ______________________________________________________________________________
 # Minimax Search
-count = 1
+count = 1 #global count variable to count the states. Equal to one to count the start node
 
 def counter():
     global count
@@ -29,7 +29,7 @@ def minimax_decision(state, game):
     player = game.to_move(state)
 
     def max_value(state):
-        counter()
+        counter() # A new state is being evaluated call the counter method
         if game.terminal_test(state):
             return game.utility(state, player)
         v = -infinity
@@ -38,7 +38,7 @@ def minimax_decision(state, game):
         return v
 
     def min_value(state):
-        counter()
+        counter() # A new state is being evaluated call the counter method
         if game.terminal_test(state):
             return game.utility(state, player)
         v = infinity
@@ -96,11 +96,11 @@ def alphabeta_search(state, game):
     As in [Figure 5.7], this version searches all the way to the leaves."""
 
     player = game.to_move(state)
-    count = 1
+    count = 1 # count the root node.
 
     # Functions used by alphabeta
     def max_value(state, alpha, beta, count):
-        count += 1
+        count += 1 # A new state is being evaluated.
         if game.terminal_test(state):
             return game.utility(state, player), count
         v = -infinity
@@ -113,7 +113,7 @@ def alphabeta_search(state, game):
         return v, count
 
     def min_value(state, alpha, beta, count):
-        count += 1
+        count += 1 #A new state is being evaluated.
         if game.terminal_test(state):
             return game.utility(state, player), count
         v = infinity
@@ -265,6 +265,7 @@ class Game:
 
     def play_game(self, state,  *players):
         """Play an n-person, move-alternating game."""
+        # this was modified to take an input state and play out that game. 
         if state == None:
             state = self.initial
 

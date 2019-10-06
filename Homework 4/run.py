@@ -8,6 +8,7 @@
 import games
 
 def findTurn(brd):
+    #This function finds out whose turn it is based on the input.
     numX = 0
     numO = 0
     for row in brd:
@@ -25,6 +26,7 @@ def findTurn(brd):
     return turn
 
 def buildBoard(brd):
+    #this function builds the board dictionary that the GameState object uses.
     board = {}
     mv = []
     x = 1
@@ -65,11 +67,12 @@ def checkForTerminal(brd, mv):
             elif count == 3 and p == 'O':
                 return -1
     if len(mv) == 0:
-        return 1
+        return None # the board is ended in a tie.
     else:
         return 0 # the board is not in a terminal state.
 
 def buildGame(brd):
+    #This function builds the game based off of the input.
     ttt = games.TicTacToe()
     gBoard, mv = buildBoard(brd)
     turn = findTurn(brd)
@@ -111,38 +114,56 @@ def main():
     # The answer should a single letter: either X or O. No punctuation. No other text.
     ttt, my_state = buildGame(brd)
     #print((my_state.utility))
-    print(my_state.to_move)
+    if my_state.utility != 0: #The game is already in a terminal state so its no ones move.
+        print('None')
+    else:
+        print(my_state.to_move) #prints whose turn it is.
 
     print("What is the value of the current state from the perspective of X?")
     # TODO - Implement. Compute and print the answer.
     # The answer should a single number: either -1 or 1 or 0. No punctuation. No other text.
     # Important: this is always from the perspective of X; *not* from the perspective of whose turn it is.
-    if my_state.utility != 0:
+    if my_state.utility == None:
+        print('0')
+        comp = my_state.utility
+    elif my_state.utility != 0:
         print(str(my_state.utility))
+        comp = my_state.utility
     else:
         decision, count_ab = games.alphabeta_search(my_state, ttt)
-        comp = ttt.compute_utility(my_state.board, decision, my_state.to_move)
-        print(str(comp))
+        new_state = games.GameState(to_move=my_state.to_move, utility=my_state.utility, board=my_state.board, moves=my_state.moves)
+        new_state = ttt.result(new_state, decision)
+        while new_state.utility == 0 and len(new_state.moves) != 0:
+            decision, c = games.alphabeta_search(new_state, ttt)
+            #comp = ttt.compute_utility(new_state.board, decision, new_state.to_move)
+            new_state = ttt.result(new_state, decision)
+        comp = new_state.utility
+        print(str(new_state.utility))
 
     print("How many states did the minimax algorithm evaluate?")
     # TODO - Implement. Compute and print the answer.
     # The answer should a single number. No punctuation. No other text.
     # You probably need to modify games.py to compute this.
-    decision, count = games.minimax_decision(my_state, ttt)
-    print(str(count))
+    if my_state.utility != 0:
+        print('1')
+    else:
+        decision, count = games.minimax_decision(my_state, ttt)
+        print(str(count))
 
     print("How many states did the alpha-beta pruning algorithm evaluate?")
     # TODO - Implement. Compute and print the answer.
     # The answer should a single number. No punctuation. No other text.
     # You probably need to modify games.py to compute this.
-
-    print(str(count_ab))
+    if my_state.utility != 0:
+        print('1')
+    else:
+        print(str(count_ab))
 
     print("Assuming both X and O play optimally, does X have a guaranteed win? Is it a tie? Is it a guaranteed loss for X?")
     # TODO - Implement. Compute and print the answer.
     # The answer should be either of "X will win.", or "It is a tie." or "X will lose."
     # Note: you already computed this somewhere above.
-    if comp == 1:
+    if comp == 1: #and len(my_state.moves) != 0:
         print("X will win.")
     elif comp == -1:
         print("X will lose.")
